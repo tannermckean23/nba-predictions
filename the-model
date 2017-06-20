@@ -493,3 +493,8 @@ predictions <- predict(m6, nba, type='response')
 nba$prediction <- predictions
 
 rm(m6,p6,predictions)
+
+# save both as csv for future refernce
+
+#write.csv(nba, 'pbp_predictions.csv', row.names=F)
+#write.csv(okc.sac, 'okc_sac.csv', row.names=F)
