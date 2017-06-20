@@ -1,0 +1,98 @@
+# read in data ------------------------------------------------------------
+
+nba <- read_csv('pbp_predictions.csv')
+
+
+
+
+# should we foul or not? --------------------------------------------------
+
+home_behind <- nba[nba$score_difference == -1 &
+                     (nba$time_played==2850 | nba$time_played==2851 | nba$time_played==2852) &
+                     nba$away_next_pos==1,]
+                     
+away_behind <- nba[nba$score_difference == 1 &
+                     (nba$time_played==2850 | nba$time_played==2851 | nba$time_played==2852 ) &
+                     nba$home_next_pos==1,]
+
+rm(away_behind,home_behind)
+
+# we need to slightly alter our model since some variables cannot be determined
+# it will not offer the exact same probability but will be as close as we can get
+# however not having rank difference will heavily sway the probability
+
+m_foul <- glm(result ~ (score_difference + time_played + last2 + final +
+                                intent_foul_home + intent_foul_away +
+                                home_next_pos + away_next_pos)^3,
+                    family='binomial', data=nba)
+
+score_difference <- c(-1, -1, -1,-1,-2,-2,-3)
+time_played <- c(2851,rep(2852,6))
+last2 <- as.factor(rep(1,7))
+final <- as.factor(rep(0,7))
+intent_foul_home <- as.factor(c(0,1,rep(0,5)))
+intent_foul_away <- as.factor(rep(0,7))
+home_next_pos <- as.factor(c(0,0,0,1,0,1,1))
+away_next_pos <- as.factor(c(1,0,1,0,1,0,0))
+
+foul <- data.frame(score_difference,time_played,last2,final,intent_foul_home,
+                        intent_foul_away,home_next_pos,away_next_pos)
+
+p <- predict(m_foul, foul, type='response')
+foul$p <- p
+
+score_difference <- c(-1,-1, -1, -3,-4)
+time_played <- c(2851, 2875, 2875, 2875, 2875)
+last2 <- as.factor(rep(1,5))
+final <- as.factor(rep(0,5))
+intent_foul_home <- as.factor(rep(0,5))
+intent_foul_away <- as.factor(rep(0,5))
+home_next_pos <- as.factor(c(0,1,0,1,1))
+away_next_pos <- as.factor(c(1,0,1,0,0))
+
+no_foul <- data.frame(score_difference,time_played,last2,final,intent_foul_home,
+                      intent_foul_away,home_next_pos,away_next_pos)
+
+p <- predict(m_foul, no_foul, type= 'response')
+no_foul$p <- p
+
+rm(score_difference,time_played,last2,final,intent_foul_home,intent_foul_away,
+   home_next_pos,away_next_pos,foul,no_foul,p,m_foul)
+
+
+
+
+
+
+# resting players ---------------------------------------------------------
+
+# we first look at the beginning of the fourth quarter
+
+# teams with a high probability of winning
+rest1 <- nba[nba$prediction >.85 & nba$event_type=='Start Period',]
+table(rest1$result)
+791/(40+791)
+summary(rest1$score_difference)
+rest1 <- rest1[order(rest1$score_difference),]
+
+# teams with a low probability of winning
+rest2 <- nba[nba$prediction <.15 & nba$event_type=='Start Period',]
+table(rest2$result)
+16/(447+16)
+summary(rest2$score_difference)
+rest2 <- rest2[order(rest2$score_difference),]
+
+# now we look at in between 4 minutes and 5 minutes
+
+# teams with a high probability of winning
+rest3 <- nba[nba$prediction > .8 & nba$time_played > 2580 & nba$time_played < 2640,]
+table(rest3$result)
+9654/(296+9654)
+summary(rest3$score_difference)
+rest3 <- rest3[order(rest3$score_difference),]
+
+#teams with a low probability of winning
+rest4 <- nba[nba$prediction < .2 & nba$time_played > 2580 & nba$time_played <2640,]
+table(rest4$result)
+221/(6269+221)
+summary(rest4$score_difference)
