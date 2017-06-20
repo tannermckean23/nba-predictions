@@ -1,0 +1,139 @@
+# read in data ------------------------------------------------------------
+
+okc.sac <-read_csv('okc_sac.csv')
+
+
+
+
+
+# visualization of each model ---------------------------------------------
+
+
+# let us create vectors we will use as our labels for time remaining
+time <- c('12:00', '9:00', '6:00', '3:00', '0:00')
+numeric_time <- c(2160, 2340, 2520, 2700, 2880)
+
+# model 1
+g1 <- ggplot(okc.sac, aes(time_played, p1)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  scale_x_continuous(breaks=numeric_time, labels=time) +
+  xlab('Time Remaining') +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10))
+
+ggsave('graphs//model1.png', plot=g1, width=5, height=3.5)
+
+# model 2
+g2 <- ggplot(okc.sac, aes(time_played, p2)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  scale_x_continuous(breaks=numeric_time, labels=time) +
+  xlab('Time Remaining') +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10))
+
+ggsave('graphs//model2.png', plot=g2, width=5, height=3.5)
+
+# model 3
+g3 <- ggplot(okc.sac, aes(time_played, p3)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  scale_x_continuous(breaks=numeric_time, labels=time) +
+  xlab('Time Remaining') +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10))
+
+ggsave('graphs//model3.png', plot=g3, width=5, height=3.5)
+
+# model 4
+g4 <- ggplot(okc.sac, aes(time_played, p4)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  scale_x_continuous(breaks=numeric_time, labels=time) +
+  xlab('Time Remaining') +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10))
+
+ggsave('graphs//model4.png', plot=g4, width=5, height=3.5)
+
+# model 5
+g5 <- ggplot(okc.sac, aes(time_played, p5)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  scale_x_continuous(breaks=numeric_time, labels=time) +
+  xlab('Time Remaining') +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10)) +
+  geom_point(x=2820,y=okc.sac$p5[okc.sac$time_played==2820],
+             color='red') +
+  geom_text(x=2775,y=okc.sac$p5[okc.sac$time_played==2820]+.07,
+            color='white',size=1.9, label='1:00 left
+probability=.23')
+
+ggsave('graphs//model5.png', plot=g5, width=5, height=3.5)
+
+# model5 against sequence id instead of time
+g5_seq <- ggplot(okc.sac, aes(sequence_id, p5)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank()) 
+
+ggsave('graphs//model5_sequence.png', plot=g5_seq, width=5, height=3.5)
+
+# model 6
+g6 <- ggplot(okc.sac, aes(time_played, p6)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  scale_x_continuous(breaks=numeric_time, labels=time) +
+  xlab('Time Remaining') +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text = element_text(size=8),
+        axis.title = element_text(size=10)) +
+  geom_point(x=2820,y=okc.sac$p6[okc.sac$time_played==2820],
+             color='red') +
+  geom_text(x=2775,y=okc.sac$p6[okc.sac$time_played==2820]+.05,
+            color='white',size=1.9, label='1:00 left
+probability=.54')
+
+ggsave('graphs//model6.png', plot=g6, width=5, height=3.5)
+
+# model 6 with sequence id instead of time
+g6_seq <- ggplot(okc.sac, aes(sequence_id, p6)) +
+  geom_line(colour='white') +
+  theme_hc(bgcolor='darkunica') +
+  ylim(0,1) +
+  ylab('Probability of Winning') +
+  theme(legend.position = 'none',
+        axis.text.x = element_blank(),
+        axis.title.x = element_blank(),
+        axis.ticks.x = element_blank()) +
+  geom_point(x=okc.sac$sequence_id[127],y=okc.sac$p6[okc.sac$sequence_id=='38337'],
+             color='red') +
+  geom_text(x=okc.sac$sequence_id[118],y=okc.sac$p6[okc.sac$sequence_id=='38337']+.05,
+            color='white', size=1.9,label='1:00 left
+probability=.54')
+
+ggsave('graphs//model6_sequence.png', plot=g6_seq, width=5, height=3.5)
